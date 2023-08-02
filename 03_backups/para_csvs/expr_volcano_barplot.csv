@@ -1,0 +1,57 @@
+Index,Comments,Parameters,Value,Defalt,Example,继承自,Type,suffix
+1,所有线属性,line,,,,,theme,2
+2,所有矩形区域属性,rect,,,,,theme,2
+3,所有文本相关属性,text,,,,,theme,2
+4,所有标题属性,title,,,,,theme,2
+5,坐标轴标题,axis.title,,,,text,theme,2
+6,x轴属性,axis.title.x,,,,axis.title,theme,2
+7,y轴属性,axis.title.y,,,,axis.title,theme,2
+8,坐标轴刻度标签属性,axis.text,,,,text,theme,2
+9,x轴刻度标签属性,axis.text.x,,,,,theme,2
+10,y轴刻度标签属性,axis.text.y,,,,,theme,2
+11,坐标轴刻度线,axis.ticks,,,,line,theme,2
+12,x轴刻度线,axis.ticks.x,,,,,theme,2
+13,y轴刻度线,axis.ticks.y,,,,,theme,2
+14,刻度线长度,axis.ticks.length,,,,,theme,2
+15,刻度线和刻度标签之间的间距,axis.ticks.margin,,,,,theme,2
+16,坐标轴线,axis.line,,,,line,theme,2
+17,x轴线,axis.line.x,,,,,theme,2
+18,y轴线,axis.line.y,,,,,theme,2
+19,图例背景,legend.background,,,,rect,theme,2
+20,图例边界,legend.margin,,,,,theme,2
+21,图例符号,legend.key,,,,,theme,2
+22,图例符号大小,legend.key.size,,,,,theme,2
+23,图例符号高度,legend.key.height,,,,,theme,2
+24,图例符号宽度,legend.key.width,,,,,theme,2
+25,图例文字标签,legend.text,,,,,theme,2
+26,图例文字标签对齐方式,legend.text.align,,,,0为左齐，1为右齐,theme,2
+27,图例标题,legend.title,,,,text,theme,2
+28,图例标题对齐方式,legend.title.align,,,,,theme,2
+29,图例位置,legend.position,"c(0.7,0.4)",,,"left, right, bottom, top, 两数字向量",theme,2
+30,图例排列方向,legend.direction,,,,"""horizontal"" or ""vertical""",theme,2
+31,居中方式,legend.justification,,,,center或两数字向量,theme,2
+32,多图例的排列方式,legend.box,,,,"""horizontal"" or ""vertical""",theme,2
+33,多图例居中方式,legend.box.just,,,,,theme,2
+34,绘图区背景,panel.background,,,,rect,theme,2
+35,绘图区边框,panel.border,,,,rect,theme,2
+36,分面绘图区之间的边距,panel.margin,,,,,theme,2
+37,绘图区网格线,panel.grid,,,,line,theme,2
+38,主网格线,panel.grid.major,,,,,theme,2
+39,次网格线,panel.grid.minor,,,,,theme,2
+40,主网格线x,panel.grid.major.x,,,,,theme,2
+41,主网格线y,panel.grid.major.y,,,,,theme,2
+42,次网格线x,panel.grid.minor.x,,,,,theme,2
+43,次网格线,panel.grid.minor.y,,,,,theme,2
+44,整个图形的背景,plot.background,,,,,theme,2
+45,图形标题,plot.title,,,,,theme,2
+46,图形边距,plot.margin,,,,"top, right, bottom, left",theme,2
+47,分面标签背景,strip.background,,,,rect,theme,2
+48,分面标签文本,strip.text,,,,text,theme,2
+49,分面标签文本x,strip.text.x,,,,,theme,2
+50,分面标签文本y,strip.text.y,,,,,theme,2
+51,柱颜色,bar_color,"c(""lightgreen"",""navy"",""red"")",,,,item,2
+52,柱宽度,bar_width,0.9,,,,item,2
+53,y轴范围,scale_y_limit,,,,,item,2
+54,y轴刻度间距,scale_y_breakstep,,,,,item,2
+55,图片放缩宽度,zoom_fig_width,1,,,,item,2
+56,图片放缩高度,zoom_fig_height,1,,,,item,2

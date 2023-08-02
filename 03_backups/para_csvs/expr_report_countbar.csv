@@ -1,0 +1,58 @@
+Index,Comments,Parameters,Value,Defalt,Example,继承自,Type,suffix
+1,所有线属性,line,,,,,theme,_bar
+2,所有矩形区域属性,rect,,,,,theme,_bar
+3,所有文本相关属性,text,,,,,theme,_bar
+4,所有标题属性,title,,,,,theme,_bar
+5,坐标轴标题,axis.title,,,,text,theme,_bar
+6,x轴属性,axis.title.x,,,,axis.title,theme,_bar
+7,y轴属性,axis.title.y,,,,axis.title,theme,_bar
+8,坐标轴刻度标签属性,axis.text,"element_text(angle=45,hjust =1,vjust = 0.5)",,,text,theme,_bar
+9,x轴刻度标签属性,axis.text.x,,,,,theme,_bar
+10,y轴刻度标签属性,axis.text.y,,,,,theme,_bar
+11,坐标轴刻度线,axis.ticks,,,,line,theme,_bar
+12,x轴刻度线,axis.ticks.x,,,,,theme,_bar
+13,y轴刻度线,axis.ticks.y,,,,,theme,_bar
+14,刻度线长度,axis.ticks.length,,,,,theme,_bar
+15,刻度线和刻度标签之间的间距,axis.ticks.margin,,,,,theme,_bar
+16,坐标轴线,axis.line,,,,line,theme,_bar
+17,x轴线,axis.line.x,,,,,theme,_bar
+18,y轴线,axis.line.y,,,,,theme,_bar
+19,图例背景,legend.background,,,,rect,theme,_bar
+20,图例边界,legend.margin,,,,,theme,_bar
+21,图例符号,legend.key,,,,,theme,_bar
+22,图例符号大小,legend.key.size,,,,,theme,_bar
+23,图例符号高度,legend.key.height,,,,,theme,_bar
+24,图例符号宽度,legend.key.width,,,,,theme,_bar
+25,图例文字标签,legend.text,,,,,theme,_bar
+26,图例文字标签对齐方式,legend.text.align,,,,0为左齐，1为右齐,theme,_bar
+27,图例标题,legend.title,,,,text,theme,_bar
+28,图例标题对齐方式,legend.title.align,,,,,theme,_bar
+29,图例位置,legend.position,,,,"left, right, bottom, top, 两数字向量",theme,_bar
+30,图例排列方向,legend.direction,,,,"""horizontal"" or ""vertical""",theme,_bar
+31,居中方式,legend.justification,,,,center或两数字向量,theme,_bar
+32,多图例的排列方式,legend.box,,,,"""horizontal"" or ""vertical""",theme,_bar
+33,多图例居中方式,legend.box.just,,,,,theme,_bar
+34,绘图区背景,panel.background,,,,rect,theme,_bar
+35,绘图区边框,panel.border,,,,rect,theme,_bar
+36,分面绘图区之间的边距,panel.margin,,,,,theme,_bar
+37,绘图区网格线,panel.grid,,,,line,theme,_bar
+38,主网格线,panel.grid.major,,,,,theme,_bar
+39,次网格线,panel.grid.minor,,,,,theme,_bar
+40,主网格线x,panel.grid.major.x,,,,,theme,_bar
+41,主网格线y,panel.grid.major.y,,,,,theme,_bar
+42,次网格线x,panel.grid.minor.x,,,,,theme,_bar
+43,次网格线,panel.grid.minor.y,,,,,theme,_bar
+44,整个图形的背景,plot.background,,,,,theme,_bar
+45,图形标题,plot.title,,,,,theme,_bar
+46,图形边距,plot.margin,"unit(c(1,1,1,1), unit = ""cm"")",,,"top, right, bottom, left",theme,_bar
+47,分面标签背景,strip.background,,,,rect,theme,_bar
+48,分面标签文本,strip.text,,,,text,theme,_bar
+49,分面标签文本x,strip.text.x,,,,,theme,_bar
+50,分面标签文本y,strip.text.y,,,,,theme,_bar
+51,横线的线型,hline_line_type,"""dashed""",,,,item,_bar
+52,横线的颜色,hline_line_color," ""white""",,,,item,_bar
+53,横线的粗细,hline_line_size,0.85,,,,item,_bar
+55,y轴范围,scale_y_limit,,,,,custom,_bar
+57,y轴刻度间距,scale_y_breakstep,,,,,custom,_bar
+59,图片放缩宽度,zoom_fig_width,1,,,,custom,_bar
+61,图片放缩高度,zoom_fig_height,1,,,,custom,_bar

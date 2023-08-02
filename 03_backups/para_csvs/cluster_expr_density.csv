@@ -1,0 +1,55 @@
+Index,Comments,Parameters,Value,Defalt,Example,继承自,Type,suffix
+1,所有线属性,line,,,,,theme,_d
+2,所有矩形区域属性,rect,,,,,theme,_d
+3,所有文本相关属性,text,,,,,theme,_d
+4,所有标题属性,title,,,,,theme,_d
+5,坐标轴标题,axis.title,element_blank(),,,text,theme,_d
+6,x轴属性,axis.title.x,,,,axis.title,theme,_d
+7,y轴属性,axis.title.y,,,,axis.title,theme,_d
+8,坐标轴刻度标签属性,axis.text,element_blank(),,,text,theme,_d
+9,x轴刻度标签属性,axis.text.x,,,,,theme,_d
+10,y轴刻度标签属性,axis.text.y,,,,,theme,_d
+11,坐标轴刻度线,axis.ticks,element_blank(),,,line,theme,_d
+12,x轴刻度线,axis.ticks.x,,,,,theme,_d
+13,y轴刻度线,axis.ticks.y,,,,,theme,_d
+14,刻度线长度,axis.ticks.length,,,,,theme,_d
+15,刻度线和刻度标签之间的间距,axis.ticks.margin,,,,,theme,_d
+16,坐标轴线,axis.line,element_blank(),,,line,theme,_d
+17,x轴线,axis.line.x,,,,,theme,_d
+18,y轴线,axis.line.y,,,,,theme,_d
+19,图例背景,legend.background,,,,rect,theme,_d
+20,图例边界,legend.margin,,,,,theme,_d
+21,图例符号,legend.key,,,,,theme,_d
+22,图例符号大小,legend.key.size,,,,,theme,_d
+23,图例符号高度,legend.key.height,,,,,theme,_d
+24,图例符号宽度,legend.key.width,,,,,theme,_d
+25,图例文字标签,legend.text,,,,,theme,_d
+26,图例文字标签对齐方式,legend.text.align,,,,0为左齐，1为右齐,theme,_d
+27,图例标题,legend.title,,,,text,theme,_d
+28,图例标题对齐方式,legend.title.align,,,,,theme,_d
+29,图例位置,legend.position,,,,"left, right, bottom, top, 两数字向量",theme,_d
+30,图例排列方向,legend.direction,,,,"""horizontal"" or ""vertical""",theme,_d
+31,居中方式,legend.justification,,,,center或两数字向量,theme,_d
+32,多图例的排列方式,legend.box,,,,"""horizontal"" or ""vertical""",theme,_d
+33,多图例居中方式,legend.box.just,,,,,theme,_d
+34,绘图区背景,panel.background,,,,rect,theme,_d
+35,绘图区边框,panel.border,,,,rect,theme,_d
+36,分面绘图区之间的边距,panel.margin,,,,,theme,_d
+37,绘图区网格线,panel.grid,,,,line,theme,_d
+38,主网格线,panel.grid.major,,,,,theme,_d
+39,次网格线,panel.grid.minor,,,,,theme,_d
+40,主网格线x,panel.grid.major.x,,,,,theme,_d
+41,主网格线y,panel.grid.major.y,,,,,theme,_d
+42,次网格线x,panel.grid.minor.x,,,,,theme,_d
+43,次网格线,panel.grid.minor.y,,,,,theme,_d
+44,整个图形的背景,plot.background,,,,,theme,_d
+45,图形标题,plot.title,,,,,theme,_d
+46,图形边距,plot.margin,"unit(c(1,1,1,1), unit = ""cm"")",,,"top, right, bottom, left",theme,_d
+47,分面标签背景,strip.background,,,,rect,theme,_d
+48,分面标签文本,strip.text,element_blank(),,,text,theme,_d
+49,分面标签文本x,strip.text.x,,,,,theme,_d
+50,分面标签文本y,strip.text.y,,,,,theme,_d
+51,"各子图的宽度比例（例如c( 1,2, 0.5, 0.5 ) ）",width_ratio,,,,,custom,_d
+52,"各子图的高度比例（例如c( 0.1,1,0.1 ) ）",height_ratio,,,,,custom,_d
+53,图片放缩宽度,zoom_fig_width,1,,,,custom,_d
+54,图片放缩高度,zoom_fig_height,1,,,,custom,_d

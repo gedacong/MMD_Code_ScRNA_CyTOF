@@ -1,0 +1,75 @@
+,Comments,Parameters,Value,Defalt,继承自,Type,suffix
+1,所有线属性,line,,,,theme,_d
+2,所有矩形区域属性,rect,,,,theme,_d
+3,所有文本相关属性,text,,,,theme,_d
+4,所有标题属性,title,,,,theme,_d
+5,坐标轴标题,axis.title,,,text,theme,_d
+6,x轴属性,axis.title.x,,,axis.title,theme,_d
+7,y轴属性,axis.title.y,,,axis.title,theme,_d
+8,坐标轴刻度标签属性,axis.text,,,text,theme,_d
+9,x轴刻度标签属性,axis.text.x,,,,theme,_d
+10,y轴刻度标签属性,axis.text.y,,,,theme,_d
+11,坐标轴刻度线,axis.ticks,,,line,theme,_d
+12,x轴刻度线,axis.ticks.x,,,,theme,_d
+13,y轴刻度线,axis.ticks.y,,,,theme,_d
+14,刻度线长度,axis.ticks.length,,,,theme,_d
+15,刻度线和刻度标签之间的间距,axis.ticks.margin,,,,theme,_d
+16,坐标轴线,axis.line,,,line,theme,_d
+17,x轴线,axis.line.x,,,,theme,_d
+18,y轴线,axis.line.y,,,,theme,_d
+19,图例背景,legend.background,,,rect,theme,_d
+20,图例边界,legend.margin,,,,theme,_d
+21,图例符号,legend.key,,,,theme,_d
+22,图例符号大小,legend.key.size,,,,theme,_d
+23,图例符号高度,legend.key.height,,,,theme,_d
+24,图例符号宽度,legend.key.width,,,,theme,_d
+25,图例文字标签,legend.text,,,,theme,_d
+26,图例文字标签对齐方式,legend.text.align,,,0为左齐，1为右齐,theme,_d
+27,图例标题,legend.title,,,text,theme,_d
+28,图例标题对齐方式,legend.title.align,,,,theme,_d
+29,图例位置,legend.position,,,"left, right, bottom, top, 两数字向量",theme,_d
+30,图例排列方向,legend.direction,,,"""horizontal"" or ""vertical""",theme,_d
+31,居中方式,legend.justification,,,center或两数字向量,theme,_d
+32,多图例的排列方式,legend.box,,,"""horizontal"" or ""vertical""",theme,_d
+33,多图例居中方式,legend.box.just,,,,theme,_d
+34,绘图区背景,panel.background,,,rect,theme,_d
+35,绘图区边框,panel.border,,,rect,theme,_d
+36,分面绘图区之间的边距,panel.margin,,,,theme,_d
+37,绘图区网格线,panel.grid,,,line,theme,_d
+38,主网格线,panel.grid.major,,,,theme,_d
+39,次网格线,panel.grid.minor,,,,theme,_d
+40,主网格线x,panel.grid.major.x,,,,theme,_d
+41,主网格线y,panel.grid.major.y,,,,theme,_d
+42,次网格线x,panel.grid.minor.x,,,,theme,_d
+43,次网格线,panel.grid.minor.y,,,,theme,_d
+44,整个图形的背景,plot.background,,,,theme,_d
+45,图形标题,plot.title,,,,theme,_d
+46,图形边距,plot.margin,"unit(c(1,1,1,1),""cm"")",,"top, right, bottom, left",theme,_d
+47,分面标签背景,strip.background,,,rect,theme,_d
+48,分面标签文本,strip.text,,,text,theme,_d
+49,分面标签文本x,strip.text.x,,,,theme,_d
+50,分面标签文本y,strip.text.y,,,,theme,_d
+51,"数据转化方式，有五种：""CytofAsinh"",""logical""，""simpleAsinh""；""0_to_Max""，所有Marker的信号强度除以最大值，线性转换，通过除以各通道信号的最大值把数值scale到0~1；""Min_to_Max""，线性转换，最小值转换成0，最大值转换成1，最大限度展现population的表达差异",trans_method,,"""simpleAsinh"",",,function,_d
+52,是否把所有heatmap合成单个文件，默认FALSE,single_file,,"FALSE,",,function,_d
+53,图中点的大小，默认是4,dot_size,,"4,",,function,_d
+54,设置colorbar的颜色，默认为jet color函数,dot_colours,,"colorRampPalette(c(""#00007F"",""blue"",""#007FFF"",""cyan"",""#7FFF7F"",""yellow"",""#FF7F00"",""red"",""#7F0000"")),",,function,_d
+55,是否显示legend（colorbar）,show_legend,,"TRUE,",,function,_d
+56,"legend(colorbar)是局部（""local""(默认)）,所有marker用不同的colorbar）还是全局（""global"",所有marker共用一个colorbar）",legend_type,,"""local"",",,function,_d
+57,"仅在legend_type是""global""的情况下有效，手动设置colorbar的上下限，取值为一个vector，例如c(0,5) 0为最小值，5为最大值",legend_limit,,"NULL,",,function,_d
+58,是否显示X 轴和Y轴的刻度，默认是TRUE,show_scale,,"TRUE,",,function,_d
+59,是否显示坐标轴，默认是TRUE,show_axis,,"TRUE,",,function,_d
+60,布尔型变量，决定是否显示等高线背景,show_contour,,"FALSE,",,function,_d
+61,连线的颜色,edge_colour,,"""grey"",",,function,_d
+62,连线的宽度      ,edge_line_size,,"1,",,function,_d
+63,"连线的图层位置，""back""和""front""，决定连线图层在散点图的后面或前面",edge_layer,,"""back"",",,function,_d
+64,设置等高线的宽度，默认0.5,contour_line_size,,"0.5,",,function,_d
+65,设置等高线的层数，默认25,contour_bins,,"25,",,function,_d
+66,"设置等高线的颜色，默认""grey""",contour_colour,,"""grey"",",,function,_d
+67,输出数据文件夹名称，默认是TRUE,output_dir,,"""tsne_heatmap"",",,function,_d
+68,"输出数据文件格式：""tiff""和“pdf”",output_format,,"""tiff"",",,function,_d
+69,"显示降维产生的维度，默认""tsne_1""",reduction_dm1,,"""tsne_1"",",,function,_d
+70,"显示降维产生的维度，默认""tsne_2""",reduction_dm2,,"""tsne_2""",,function,_d
+71,x轴范围,x_limit,,,,custom,_d
+72,y轴范围,y_limit,,,,custom,_d
+73,图片放缩宽度,zoom_fig_width,1,,,custom,_d
+74,图片放缩高度,zoom_fig_height,1,,,custom,_d

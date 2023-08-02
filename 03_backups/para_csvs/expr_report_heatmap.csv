@@ -1,0 +1,12 @@
+Index,Comments,Parameters,Value,Defalt,Example,继承自,Type,suffix
+1,行是否聚类,Rowv,,TRUE,,,item,
+2,列是否聚类,Colv,,TRUE,,,item,
+3,显示树状图,dendrogram,,"""both""",,,item,
+4,colorbar的标题大小,keysize,1,,,,item,
+5,colobar上是否显示密度信息,density.info,"""none""",,,,item,
+6,列标签旋转角度,srtCol,45,,,,item,
+7,行标签旋转角度,srtRow,0,,,,item,
+8,确实数值的颜色,na.color,"""grey""",,,,item,
+9,标签外边缘大小,fig_margin,"c(15,15)",,,,item,
+10,图片放缩宽度,zoom_fig_width,1,,,,custom,_h
+11,图片放缩高度,zoom_fig_height,1,,,,custom,_h

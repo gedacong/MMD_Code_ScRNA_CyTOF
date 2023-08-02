@@ -1,0 +1,67 @@
+Index,Comments,Parameters,Value,Defalt,Example,继承自,Type,suffix
+1,所有线属性,line,,,,,theme,1
+2,所有矩形区域属性,rect,,,,,theme,1
+3,所有文本相关属性,text,,,,,theme,1
+4,所有标题属性,title,,,,,theme,1
+5,坐标轴标题,axis.title,,,,text,theme,1
+6,x轴属性,axis.title.x,,,,axis.title,theme,1
+7,y轴属性,axis.title.y,,,,axis.title,theme,1
+8,坐标轴刻度标签属性,axis.text,,,,text,theme,1
+9,x轴刻度标签属性,axis.text.x,,,,,theme,1
+10,y轴刻度标签属性,axis.text.y,,,,,theme,1
+11,坐标轴刻度线,axis.ticks,,,,line,theme,1
+12,x轴刻度线,axis.ticks.x,,,,,theme,1
+13,y轴刻度线,axis.ticks.y,,,,,theme,1
+14,刻度线长度,axis.ticks.length,,,,,theme,1
+15,刻度线和刻度标签之间的间距,axis.ticks.margin,,,,,theme,1
+16,坐标轴线,axis.line,,"element_line(colour='black',linetype = 1,size=0.3)",,line,theme,1
+17,x轴线,axis.line.x,,,,,theme,1
+18,y轴线,axis.line.y,,,,,theme,1
+19,图例背景,legend.background,,,,rect,theme,1
+20,图例边界,legend.margin,,,,,theme,1
+21,图例符号,legend.key,,,,,theme,1
+22,图例符号大小,legend.key.size,,,,,theme,1
+23,图例符号高度,legend.key.height,,,,,theme,1
+24,图例符号宽度,legend.key.width,,,,,theme,1
+25,图例文字标签,legend.text,,,,,theme,1
+26,图例文字标签对齐方式,legend.text.align,,,,0为左齐，1为右齐,theme,1
+27,图例标题,legend.title,,,,text,theme,1
+28,图例标题对齐方式,legend.title.align,,,,,theme,1
+29,图例位置,legend.position,,,,"left, right, bottom, top, 两数字向量",theme,1
+30,图例排列方向,legend.direction,,,,"""horizontal"" or ""vertical""",theme,1
+31,居中方式,legend.justification,,,,center或两数字向量,theme,1
+32,多图例的排列方式,legend.box,,,,"""horizontal"" or ""vertical""",theme,1
+33,多图例居中方式,legend.box.just,,,,,theme,1
+34,绘图区背景,panel.background,,"element_rect(colour='black',size = 1 )",,rect,theme,1
+35,绘图区边框,panel.border,,,,rect,theme,1
+36,分面绘图区之间的边距,panel.margin,,,,,theme,1
+37,绘图区网格线,panel.grid,,,,line,theme,1
+38,主网格线,panel.grid.major,,,,,theme,1
+39,次网格线,panel.grid.minor,,,,,theme,1
+40,主网格线x,panel.grid.major.x,,,,,theme,1
+41,主网格线y,panel.grid.major.y,,,,,theme,1
+42,次网格线x,panel.grid.minor.x,,,,,theme,1
+43,次网格线,panel.grid.minor.y,,,,,theme,1
+44,整个图形的背景,plot.background,,,,,theme,1
+45,图形标题,plot.title,,,,,theme,1
+46,图形边距,plot.margin,"unit(c(1,1,1,1), unit = ""cm"")","unit(c(1,1,1,1), unit = ""cm"")",,"top, right, bottom, left",theme,1
+47,分面标签背景,strip.background,,,,rect,theme,1
+48,分面标签文本,strip.text,,,,text,theme,1
+49,分面标签文本x,strip.text.x,,,,,theme,1
+50,分面标签文本y,strip.text.y,,,,,theme,1
+52,圆点颜色,dot_colorset,"c(""grey"",""red"")",,,,item,1
+52,圆点大小范围,dot_radius,"c(2,7)",,,,item,1
+53,Cluster名称的颜色,label_color,"""black""","""black""",,,item,1
+54,Cluster名称的大小,label_size,3,3,,,item,1
+55,两条竖线的线型,vline_line_type,"""dashed""","""dashed""",,,item,1
+56,两条竖线的颜色,vline_line_color,"""blue""","""blue""",,,item,1
+57,两条竖线的粗细,vline_line_size,0.55,0.55,,,item,1
+58,横线的线型,hline_line_type,"""dashed""","""dashed""",,,item,1
+59,横线的颜色,hline_line_color,"""blue""","""blue""",,,item,1
+60,横线的粗细,hline_line_size,0.55,0.55,,,item,1
+61,x轴范围,x_limit,,,,,custom,1
+62,y轴范围,y_limit,"c(0,6)",,,,custom,1
+63,x轴刻度间距,x_breakstep,1,,,,custom,1
+64,y轴刻度间距,y_breakstep,1, ,,,custom,1
+65,图片放缩宽度,zoom_fig_width,1,,,,custom,1
+66,图片放缩高度,zoom_fig_height,1,,,,custom,1
