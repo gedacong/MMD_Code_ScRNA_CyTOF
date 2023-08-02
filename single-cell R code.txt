@@ -1,0 +1,541 @@
+library(limma)
+library(DESeq2)
+library(edgeR)
+library(Seurat)
+library(magrittr)
+library(celldex)
+library(SingleR)
+library(monocle)
+library(plyr)
+library(dplyr)
+library(reshape2)
+library(ggplot2)
+library(cowplot)
+library(patchwork)
+library(pheatmap)
+library("scales")
+library(ggsci)
+library(circlize)
+library(RColorBrewer)
+library(ComplexHeatmap)
+library(pheatmap)
+library(scRNAtoolVis)
+library(Scillus) 
+library(tidyverse) 
+library(Seurat) 
+library(magrittr)
+library(devtools)
+library(tidyverse)
+library(Scillus)
+library(Seurat)
+library(magrittr)
+library(purrr)
+
+
+
+folders=list.files('./',pattern='[12345678]$')
+folders 
+scList = lapply(folders,function(folder){  
+  CreateSeuratObject(counts = Read10X(folder), 
+                     project = folder,
+                     min.cells = 3, min.features = 200)
+})
+
+MMD <- merge(scList[[1]], 
+             y = c(scList[[2]],scList[[3]],scList[[4]],scList[[5]],scList[[6]],scList[[7]]), 
+             add.cell.ids = c("MMD1","MMD2","MMD3","MMD4","MMD5","MMD6","MMD7"), 
+             project = "MMD")
+MMD
+
+
+XG= Read10X("./GSE165080")
+XG <- CreateSeuratObject(XG, min.cells =3, project = "XG",min.features = 200)
+
+head(XG@meta.data)      
+XG$CELL = substr(colnames(XG),0,19)
+XG$ID = substring(XG$CELL,18) 
+XG$ID = substring(XG$CELL,18) 
+table(XG$ID) 
+XG$orig.ident=XG$ID 
+table(XG$orig.ident) 
+head(XG@meta.data) 
+Idents(object = XG) <- "orig.ident"    
+HC <- subset(XG, ident=c(12,13,44,47,14,49,46))  #  提取子集
+head(HC@meta.data)
+
+HC$orig.ident[which(HC$orig.ident =='13')] <- 'HC01'     ##换ID
+HC$orig.ident[which(HC$orig.ident =='12')] <- 'HC02'
+HC$orig.ident[which(HC$orig.ident =='44')] <- 'HC03'
+HC$orig.ident[which(HC$orig.ident =='47')] <- 'HC04'
+HC$orig.ident[which(HC$orig.ident =='14')] <- 'HC05'
+HC$orig.ident[which(HC$orig.ident =='49')] <- 'HC06'
+HC$orig.ident[which(HC$orig.ident =='46')] <- 'HC07'  
+
+
+MMD[["percent.mt"]] <- PercentageFeatureSet(MMD,pattern = "^MT-")
+HC[["percent.mt"]] <- PercentageFeatureSet(HC,pattern = "^MT-")
+VlnPlot(object =MMD, features = c("nFeature_RNA", "nCount_RNA", "percent.mt"), ncol = 3)
+VlnPlot(object =HC, features = c("nFeature_RNA", "nCount_RNA", "percent.mt"), ncol = 3)
+
+MMD <- subset(MMD, subset =nFeature_RNA <4000 & nCount_RNA < 20000 & percent.mt < 10)
+HC <- subset(HC, subset =nFeature_RNA < 4000 & nCount_RNA < 20000 & percent.mt < 10) 
+
+VlnPlot(object =MMD, features = c("nFeature_RNA", "nCount_RNA", "percent.mt"), ncol = 3)
+VlnPlot(object =HC, features = c("nFeature_RNA", "nCount_RNA", "percent.mt"), ncol = 3)
+
+MMD <- NormalizeData(MMD, normalization.method = "LogNormalize", scale.factor = 10000)
+MMD <- FindVariableFeatures(MMD, selection.method = "vst",nfeatures = 4000)
+
+HC <- NormalizeData(HC, normalization.method = "LogNormalize", scale.factor = 10000)
+HC <- FindVariableFeatures(HC,selection.method = "vst", nfeatures = 4000)
+
+pbmc_HM <- subset(pbmc_HM , subset =nFeature_RNA < 5000 & nCount_RNA < 30000 & percent.mt < 15) 
+
+#########数据合并  Integration ----
+testHM.anchors <- FindIntegrationAnchors(object.list = list(MMD,HC), dims = 1:30)
+testHM.integrated <- IntegrateData(anchorset = testHM.anchors, dims = 1:30)
+
+pbmc_HM=testHM.integrated
+pbmc_HM$sample = pbmc_HM@meta.data$orig.ident
+pbmc_HM$main_type =  substr(pbmc_HM@meta.data$sample,0,1)
+table(pbmc_HM$sample) 
+Idents(pbmc_HM) <- "orig.ident" 
+
+
+DefaultAssay(pbmc_HM) <- "integrated"  #pbmc_T,pbmc_B,pbmc_DC,pbmc_NK
+pbmc_HM<-ScaleData(pbmc_HM)   
+pbmc_HM <- RunPCA(pbmc_HM, npcs = 50, verbose = FALSE)
+pbmc_HM <- FindNeighbors( pbmc_HM, dims = 1:15)
+pbmc_HM <- FindClusters( pbmc_HM, resolution = 0.7)
+pbmc_HM <- RunUMAP( pbmc_HM, dims = 1:15)
+pbmc_HM <- RunTSNE( pbmc_HM, dims = 1:15)
+
+
+DimPlot(pbmc_HM, group.by = "sample", label = T,reduction='tsne',split.by = "main_type")
+DimPlot(pbmc_HM, group.by = "main_type", label = T,reduction='tsne',cols = c("H"='#25aff5',"M"='#F68282')#,split.by = "main_type")
+DimPlot(pbmc_HM, group.by = "seurat_clusters", label = T, label.size = 6,reduction="tsne")#,split.by = "main_type")
+
+
+
+DimPlot(pbmc_HM, reduction = 'tsne',
+        group.by = 'seurat_clusters', pt.size = 1, label=FALSE,split.by = "main_type",
+        cols = c('0'='#FF66A8','1'='#FB8071','2'='#1965AF','3'='#79AEDE','4'='#882F73',
+                 '5'='#B07BA5','6'='#FE7F00','7'='#FCB362','8'='#E62987','9'='#E789C3',
+                 '10'='#33A02D','11'='#B2DF8A','12'='#55A1B1','13'='#8DD3C8','14'='#A6751D',
+                 '15'='#E8AA07','16'='#7571B9','17'='#BEADD5','18'='#666666','19'='#999999'))
+
+
+###CELLTYPE
+pbmc=pbmc_HM
+library(SingleR)
+#ref.se<-celldex::DatabaseImmuneCellExpressionData  - DatabaseImmuneCellExpressionData()
+ref.se=HumanPrimaryCellAtlasData()
+#ref.se=DatabaseImmuneCellExpressionData()
+
+counts<-pbmc@assays$RNA@counts
+clusters<-pbmc@meta.data$seurat_clusters
+singler = SingleR(test = counts, ref = ref.se,
+                  labels = ref.se$label.main, method = "cluster",     ，
+                  clusters = clusters, 
+                  assay.type.test = "logcounts", assay.type.ref = "logcounts")
+table(singler$labels)
+celltype = data.frame(ClusterID=rownames(singler), 
+                      celltype=singler$labels, stringsAsFactors = F)
+pbmc@meta.data$singleR=celltype[match(pbmc@active.ident,celltype$ClusterID),'celltype']
+#pdf(file="06.clusterplussingler.pdf",width=10,height=6)
+DimPlot(pbmc, group.by = "singleR",label = T, label.size = 6,reduction = "tsne"),split.by = "main_type")
+
+DimPlot(pbmc_HM, group.by = "singleR",label = T, label.size = 6,reduction = "tsne")
+
+DimPlot(pbmc, reduction = 'tsne',
+        group.by = 'singleR', pt.size = 1, label=FALSE,split.by = "main_type",
+        cols = c('B_cell'='#FCB362','CMP'='#FB8071','HSC_-G-CSF'='#1965AF','Monocyte'='#79AEDE','Myelocyte'='#882F73',
+                 'NK_cell'='#B07BA5','Platelets'='#FE7F00','T_cells'='#FF66A8'))
+
+
+new.cluster.ids<-c("T_cells","T_cells","Monocyte","T_cells","Monocyte","T_cells","NK_cells","NK_cells",
+                   "T_cells","B_cells","B_cells","T_cells","Monocyte","Monocyte","Monocyte","Monocyte",
+                   "T_cells","T_cells","B_cells","T_cells","Monocyte","DC","T_cells",
+                   "Monocyte","Monocyte","T_cells")           
+Idents(pbmc_HM) <- "seurat_clusters"
+names(new.cluster.ids)<-levels(pbmc_HM)
+pbmc_HM<-RenameIdents(pbmc_HM,new.cluster.ids)     
+pbmc_HM$celltype_HM<-Idents(pbmc_HM)                           
+head(pbmc_HM@meta.data)                                             
+
+DimPlot(pbmc_HM,                                                 
+        reduction='tsne',                                   
+        group.by = "celltype_HM",                           
+        pt.size=1,                                           
+        split.by="main_type",                    
+        label = T,                                                              
+        label.size = 5,            
+        cols = c("#DD848E","#E5CED6","#63A78D","#A78F37","#43B8DA",
+                 "#DDBB5C","#7080AD","#C4DAEC","#DE6664","#E099BD",
+                 "#6DAFA9","#9262A0","#CF867A","#C7DCA5","#D8B840",
+                 "#51A5BB","#EDAA72","#EB9855","#87B9D8","#98766A",
+                 "#F4CEC4","#ECB97A","#70B778","#E2E49B","#C2A793",
+                 "#793C72","#BBA4C9","#829E55","#3D938E","#D7AA4B",
+                 "#AC3C89","#3EAC70")),
+
+
+use_colors=c("#DD848E","#E5CED6","#63A78D","#A78F37","#43B8DA",
+             "#DDBB5C","#7080AD","#C4DAEC","#DE6664","#E099BD",
+             "#6DAFA9","#9262A0","#CF867A","#C7DCA5","#D8B840",
+             "#51A5BB","#EDAA72","#EB9855","#87B9D8","#98766A",
+             "#F4CEC4","#ECB97A","#70B778","#E2E49B","#C2A793",
+             "#793C72","#BBA4C9","#829E55","#3D938E","#D7AA4B",
+             "#AC3C89","#3EAC70")
+cell_types <- FetchData(markerdata, vars = c("sample", "celltype_HM", "main_type"))
+ggplot(data = cell_types) + 
+  geom_bar(mapping = aes(x = sample, fill = celltype_HM, ), position = "fill", width = 0.75) +
+  scale_fill_manual(values = use_colors) +coord_flip()
+  
+
+###Singlecellratio
+library(Seurat)
+library(dplyr)
+library(reshape2)
+library(plyr)
+library(ggplot2)
+setwd("D:/")
+source("./Singlecellratio_plotstat.R")
+my_comparisons <- list(c("BM", "GM"))
+Singlecellratio_plotstat(scedata, group_by = "group",
+                         meta.include = c("group","orig.ident"),
+                         color_by = 'cell.type')
+Singlecellratio_plotstat(scedata, group_by = "group",
+                         meta.include = c("group","orig.ident"),
+                         comparisons = my_comparisons, color_by = 'group',
+                         group_by.point = "orig.ident",label.x = 1, pt.size = 3,
+                         label = 'p.format', ncol =3)
+Singlecellratio_plotstat(scedata, group_by = "group",
+                         meta.include = c("group","orig.ident"),
+                         comparisons = my_comparisons, color_by = 'orig.ident',
+                         group_by.point = "orig.ident",label.x = 1, pt.size = 3,
+                         label = 'p.format', ncol =3)
+Singlecellratio_plotstat(scedata, group_by = "group",
+                         meta.include = c("group","orig.ident"),
+                         comparisons = my_comparisons, color_by = 'orig.ident',
+                         group_by.point = "orig.ident",label.x = 1, pt.size = 3,
+                         label = 'p.format', ncol =3,shape_by = 'group')
+
+
+##VlnPlot
+DefaultAssay(pbmc_HM) <- "RNA"
+markers<-c("CD3E","CD3D","CD3G","MS4A1","CD19","KLRF1","NCAM1","LYZ","CSF1R",
+               "TBX21","LILRA4","IL3RA","CYTL1","GATA2")
+markers <- as.data.frame(markers)
+markerdata <- ScaleData(pbmc_T, features = as.character(unique(markers$markers)), assay = "RNA")
+markerdata$celltype_T<- factor(x=markerdata$celltype_T,
+                             levels = c("γδ T","DNT","DPT","NKT","CD8+ Tem","CD8+ Tcm","CD8+ Te","CD8+ Tn","Treg",
+                                        "CD4+ Tem","CD4+ Tcm","CD4+ Te","CD4+ Tn"))
+markerdata$celltype_T<- factor(x=markerdata$celltype_T,
+                               levels = c("CD4+ Tn","CD4+ Te","CD4+ Tcm","CD4+ Tem","Treg","CD8+ Tn","CD8+ Te","CD8+ Tcm",
+                                          "CD8+ Tem","NKT","DPT","DNT","γδ T"))
+VlnPlot(markerdata,                                              
+        features = as.character(unique(markers$markers)),              
+        pt.size=0.5,                                       
+        group.by ="celltype_T",            
+        stack=F,                                            
+        same.y.lims=F,                                  
+        flip=F                                  
+)+                                          
+  NoLegend() 
+
+
+VlnPlot(object = pbmc,                         
+        features = c("GENE"),                    
+        pt.size=1)                                    
+#cols = c("grey", "red"))              
+
+
+##FeaturePlot
+FeaturePlot(pbmc_HM,                                   
+            features = c("CSF2RB"),             
+            reduction='tsne',                    
+            pt.size=1,                                
+            cols = c("lightgrey", "red"),     
+            label=T,                                   
+
+#Heatmap
+library("scales")
+library(ggsci)
+library(ggsci)
+library(circlize)
+library(RColorBrewer)
+library(ComplexHeatmap)
+library(pheatmap)
+library(scRNAtoolVis)
+if (requireNamespace("BiocManager", quietly=TRUE))
+  install.packages("BiocManager")
+BiocManager::install("ComplexHeatmap")
+
+mycol <- hue_pal()(9)
+mycol1 <- pal_npg()(9)
+# plot
+DefaultAssay(pbmc_HM) <- "RNA"
+Idents(pbmc_HM) <- "main_type"
+pbmc_HM.markers <- FindAllMarkers(object =pbmc_HM, only.pos = TRUE, min.pct = 0.2)
+
+top10 <- pbmc_HM.markers %>% group_by(cluster) %>% top_n(10, avg_log2FC)
+
+AverageHeatmap(object = pbmc_CD8,
+               markerGene = top15$gene,
+               group.by = 'orig.ident')
+
+
+
+##Volcano
+
+Idents(sce) <- "celltype_HM"
+df <-find_diff_genes(dataset = sce, 
+                     clusters = as.character("T_cells"),
+                     comparison = c("main_type","M", "H"),
+                     logfc.threshold = 0,   
+                     min.cells.group = 1)  
+DefaultAssay(sce) <- "RNA"
+Idents(sce) <- "main_type"
+avg.exp <- as.data.frame(log1p(AverageExpression(sce, verbose = FALSE)$RNA))
+avg.exp$gene <- rownames(avg.exp)
+sc <- df$feature
+sc <- as.character(sc)
+avg.exp.sc <- avg.exp[sc, ]
+exp <- cbind(df, avg.exp.sc)
+# 标签
+genes.to.label = c("AIF1","ALOX5","ALOX5AP","BCL6","C3AR1","C5AR1","CASP4","CD14","CD36","CD68","ADGRE5","CEBPB","CCR1","CSF1R",
+  "CX3CR1","CYBA","CYBB","FCGR1A","FCGR3A","FOS")
+markerGene = top10$gene
+genes.to.label=top10$gene
+
+library(ggplot2)
+p1 <- ggplot(exp, aes(M, H)) + 
+  geom_point(size=2, shape=16,color="grey")+
+  geom_point(data = exp[exp$p_val_adj <0.01&(exp$avg_log2FC >1),], stroke = 0.5, size=2, shape=16, color="firebrick") + 
+  geom_point(data = exp[exp$p_val_adj <0.01&(exp$avg_log2FC < -1),], stroke = 0.5, size=2, shape=16,color="dodgerblue") + 
+  ggtitle("T CELL")+
+  theme_bw() + 
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.border = element_rect(size=1, colour = "black")) +
+  theme(axis.title =element_text(size = 14),axis.text =element_text(size = 10, color = "black"),
+        plot.title =element_text(hjust = 0.5, size = 16))
+LabelPoints(plot = p1, 
+            points = genes.to.label, 
+            repel = TRUE,
+            xnudge=0.2,
+            ynudge=0.4)
+
+
+
+
+#GSVA
+library(Seurat)
+library(msigdbr)
+library(GSVA)
+library(tidyverse)
+library(clusterProfiler)
+library(patchwork)
+library(limma)
+genesets <- msigdbr( species = "Homo sapiens", category = "H")
+genesets <- subset(genesets, select = c("gs_name", "gene_symbol")) %>% as.data.frame()
+genesets <- split(genesets$gene_symbol, genesets$gs_name)
+Idents(pbmc_T) <- "celltype_T"
+expr <- AverageExpression(pbmc_T, assays = "RNA", slot = "data") [[1]]
+expr <- expr[rowSums(expr)>0,] 
+head(expr)
+gsva.res <- gsva(expr, genesets, method="gsva")
+saveRDS(gsva.res, "gsva.res.rds")
+gsva.df <- data.frame(Genesets=rownames(gsva.res), gsva.res, check.names = F)
+Write.csv(gsva.df, "gsva_res.csv", row.names = F)
+pheatmap::pheatmap(gsva.res, show_colnames = T,
+                   scale = "row",angle_col = "45",
+                   color = colorRampPalette(c("navy", "white", "firebrick3") )(50))
+group_list <- data.frame(sample = colnames(gsva.df)[-1], group = c(rep("case",7), rep("con", 7)))
+group_list                          
+design <- model.matrix(~ 0 + factor(group_list$group))
+colnames(design) <- levels(factor(group_list$group))
+rownames(design) <- colnames(gsva.res)
+design
+contrast.matrix <- makeContrasts(con-case, levels = design)
+fit <- lmFit(gsva.res, design)
+fit2 <- contrasts.fit(fit, contrast.matrix)
+fit2 <- eBayes(fit2)
+x <- topTable(fit2, coef = 1, n = Inf, adjust.method = "BH", sort.by = "P")
+head(x)
+write.csv(x, "gsva_limma.csv", quote = F)
+pathway <- str_replace(row.names(x), "HALLMARK_", "")
+df <- data.frame(ID = pathway, score = x$t)
+head(df)
+write.csv(df, "enrich_bar.csv", quote = F, row.names = F)
+cutoff <- 0
+df$group <- cut(df$score, breaks = c(-Inf, cutoff, Inf),labs = c(1,2))
+head(df)
+sortdf <- df[order(df$score),]
+sortdf$ID <- factor(sortdf$ID, levels = sortdf$ID)
+head(sortdf)
+ggplot(sortdf, aes(ID, score, fill = group))+ geom_bar(stat = 'identity') +
+  coord_flip() +
+  scale_fill_manual(values = c('palegreen3', 'dodgerblue4'), guide = FALSE) +
+  geom_hline(yintercept = c(-1,1),
+             color="white",
+             linetype = 2, 
+             size = 0.3) + 
+  geom_text(data = subset(df, score < 0),
+            aes(x=ID, y=0.1, label=ID, color=group),
+            size = 3, 
+            hjust = "outward" )+ 
+  geom_text(data = subset(df, score > 0),
+            aes(x=ID, y= -0.1, label= paste0(" ", ID), color = group),
+            size = 3, hjust = "inward") +
+  scale_colour_manual(values = c("black", "black"), guide = FALSE) +
+  
+  xlab("" ) +ylab("GSVA t")+
+  theme_bw() + 
+  theme(panel.grid =element_blank()) + 
+  theme(panel.border = element_rect(size = 0.6)) + 
+  theme(axis.line.y = element_blank(), axis.ticks.y = element_blank(), axis.text.y = element_blank()) 
+ggsave("gsva.pdf", width = 6, height = 8)
+
+
+
+
+
+#FindMarkers
+Idents(pbmc_CD4) <- "main_type"         
+CD4_markers<- FindMarkers(pbmc_CD4,ident.1 ="M",ident.2 = "H", verbose = FALSE) 
+saveRDS(CD4_markers, "CD4_markers.rds")
+write.table(CD4_markers,file='CD4_markers.xls',sep='\t')
+head(CD4_markers, n = 15)
+
+
+
+
+####exhaustion scores, cytotoxicity scores, naive scores, EndMT scores
+#exhaustion scores:  c("LAG3","TIGIT","PDCD1","CTLA4","HAVCR2","TOX")
+#cytotoxicity scores: c("PRF1","IFNG","GNLY","NKG7","GZMB","GZMA","GZMH","KLRK1","KLRB1","KLRD1","CTSW","CST7")
+#naive scores: c("CCR7”,“TCF7”,“LEF1”,“SELL")
+#EndMT scores: c("PDGFB","TGFB1","EGF","HGF","IGF1","CXCL12")
+DefaultAssay(pbmc_T) <- "RNA"
+cd_features <- list(c("LAG3","TIGIT","PDCD1","CTLA4","HAVCR2","TOX"))
+
+Inscore <- AddModuleScore(pbmc_CD8,
+                          features = cd_features,
+                          ctrl = 100,
+                          name = "CD_Features")
+colnames(Inscore@meta.data)
+colnames(Inscore@meta.data)[13] <- 'exhaustion scores' 
+
+VlnPlot(Inscore,features = 'exhaustion scores', 
+        pt.size = 0, adjust = 2,group.by = "celltype",split.by ="main_type")
+
+
+
+#monocle2   
+if (!requireNamespace("BiocManager", quietly = TRUE))
+  install.packages("BiocManager")
+BiocManager::install("monocle")
+library(monocle)#
+data <- as(as.matrix(CD8@assays$RNA@counts), 'sparseMatrix')
+pd <- new('AnnotatedDataFrame',
+          data = CD8@meta.data)
+fData <- data.frame(gene_short_name = row.names(data), 
+                    row.names = row.names(data))
+fd <- new('AnnotatedDataFrame', data = fData)
+mycds <- newCellDataSet(data,
+                        phenoData = pd,
+                        featureData = fd,
+                        expressionFamily = negbinomial.size())
+mycds <- estimateSizeFactors(mycds)
+mycds <- estimateDispersions(mycds, cores=20, relative_expr = TRUE)
+mycds <- detectGenes(mycds, min_expr = 0.1)
+mycds_expressed_genes <- row.names(subset(fData(mycds),
+                                          num_cells_expressed >= 10))
+mycds <- mycds[mycds_expressed_genes,]
+
+disp_table <- dispersionTable(mycds)
+disp.genes <- subset(disp_table, mean_expression >= 0.1 & dispersion_empirical >= 1 * dispersion_fit)$gene_id
+mycds <- setOrderingFilter(mycds, disp.genes)
+mycds <- reduceDimension(mycds, max_components = 2, method = 'DDRTree')
+suppressWarnings(mycds <- orderCells(mycds))
+
+plot_cell_trajectory(mycds, color_by = "celltype")|plot_cell_trajectory(mycds, color_by = "Pseudotime")|plot_cell_trajectory(mycds, color_by = "State")
+
+BEAM_res <- BEAM(mycds, branch_point = 1, cores = 20, progenitor_method = "duplicate")
+BEAM_res <- BEAM_res[order(BEAM_res$qval),]
+BEAM_res <- BEAM_res[,c("gene_short_name", "pval", "qval")]
+
+plot_genes_branched_heatmap(mycds[row.names(BEAM_res)[1:50]], branch_point = 1, num_clusters = 3, 
+                            cores=20, use_gene_short_name=TRUE, show_rownames=TRUE),hmcols = colorRampPalette(c("navy","white","firebrick3"))(100))
+
+
+
+
+#SSGSEA
+# install packages from CRAN
+cran.packages <- c("msigdbr", "dplyr", "purrr", "stringr","magrittr",
+                   "RobustRankAggreg", "tibble", "reshape2", "ggsci",
+                   "tidyr", "aplot", "ggfun", "ggplotify", "ggridges",
+                   "gghalves", "Seurat", "SeuratObject", "methods",
+                   "devtools", "BiocManager","data.table","doParallel",
+                   "doRNG")
+if (!requireNamespace(cran.packages, quietly = TRUE)) {
+  install.packages(cran.packages, ask = F, update = F)
+}
+
+# install packages from Bioconductor
+bioconductor.packages <- c("GSEABase", "AUCell", "SummarizedExperiment",
+                           "singscore", "GSVA", "ComplexHeatmap", "ggtree",
+                           "Nebulosa")
+if (!requireNamespace(bioconductor.packages, quietly = TRUE)) {
+  BiocManager::install(bioconductor.packages, ask = F, update = F)
+}
+# install packages from Github
+if (!requireNamespace("UCell", quietly = TRUE)) {
+  devtools::install_github("carmonalab/UCell")
+}
+if (!requireNamespace("irGSEA", quietly = TRUE)) {
+  devtools::install_github("chuiqin/irGSEA")
+}
+
+
+pbmc3k.final <- pbmc_CD4
+Idents(pbmc3k.final) <- pbmc3k.final$celltype
+library(UCell)
+library(irGSEA)
+pbmc3k.final <- UpdateSeuratObject(pbmc3k.final)
+pbmc3k.final <- irGSEA.score(object = pbmc3k.final, assay = "RNA",
+                             slot = "data", seeds = 123, ncores = 20,
+                             min.cells = 3, min.feature = 0,
+                             custom = F, geneset = NULL, msigdb = T,
+                             species = "Homo sapiens", category = "H",  
+                             subcategory = NULL, geneid = "symbol",
+                             method = c("AUCell", "UCell", "singscore",
+                                        "ssgsea"),
+                             aucell.MaxRank = NULL, ucell.MaxRank = NULL,
+                             kcdf = 'Gaussian')
+
+
+Seurat::Assays(pbmc3k.final)
+result.dge <- irGSEA.integrate(object = pbmc3k.final,
+                               group.by = "celltype",
+                               metadata = NULL, col.name = NULL,
+                               method = c("AUCell","UCell","singscore",
+                                          "ssgsea"))
+class(result.dge)
+
+my_colors <- c("#DD848E","#E5CED6","#63A78D","#A78F37","#43B8DA",
+               "#DDBB5C","#7080AD","#C4DAEC","#DE6664","#E099BD",
+               "#6DAFA9","#9262A0","#CF867A","#C7DCA5","#D8B840",
+               "#51A5BB","#EDAA72","#EB9855","#87B9D8","#98766A",
+               "#F4CEC4","#ECB97A","#70B778","#E2E49B","#C2A793",
+               "#793C72","#BBA4C9","#829E55","#3D938E","#D7AA4B",
+               "#AC3C89","#3EAC70")
+
+irGSEA.heatmap.plot <- irGSEA.heatmap(object = result.dge,
+                                      method = "ssgsea",
+                                      top = 50,
+                                      show.geneset = NULL)
+                       
+irGSEA.heatmap.plot
+
+

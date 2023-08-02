@@ -1,0 +1,98 @@
+
+##dot plot
+#install.packages("ggpubr")
+library(ggpubr)           
+inputFile="input.txt"      
+outFile="boxplot.pdf"      
+setwd("C:\)    
+
+rt=read.table(inputFile,sep="\t",header=T,check.names=F)
+x=colnames(rt)[2]
+y=colnames(rt)[3]
+colnames(rt)=c("id","Type","Expression")
+
+group=levels(factor(rt$Type))
+rt$Type=factor(rt$Type, levels=group)
+comp=combn(group,2)
+my_comparisons=list()
+for(i in 1:ncol(comp)){my_comparisons[[i]]<-comp[,i]}
+boxplot=ggboxplot(rt, x="Type", y="Expression", color="Type",
+		          xlab=x,
+		          ylab=y,
+		          legend.title=x,
+		          add = "jitter")+ 
+	    stat_compare_means(comparisons = my_comparisons)
+pdf(file=outFile, width=5.5, height=5)
+print(boxplot)
+dev.off()
+
+
+
+
+#GSVA
+library(Seurat)
+library(msigdbr)
+library(GSVA)
+library(tidyverse)
+library(clusterProfiler)
+library(patchwork)
+library(limma)
+genesets <- msigdbr( species = "Homo sapiens", category = "H")
+genesets <- subset(genesets, select = c("gs_name", "gene_symbol")) %>% as.data.frame()
+genesets <- split(genesets$gene_symbol, genesets$gs_name)
+Idents(pbmc_T) <- "celltype_T"
+expr <- AverageExpression(pbmc_T, assays = "RNA", slot = "data") [[1]]
+expr <- expr[rowSums(expr)>0,] 
+head(expr)
+gsva.res <- gsva(expr, genesets, method="gsva")
+saveRDS(gsva.res, "gsva.res.rds")
+gsva.df <- data.frame(Genesets=rownames(gsva.res), gsva.res, check.names = F)
+Write.csv(gsva.df, "gsva_res.csv", row.names = F)
+pheatmap::pheatmap(gsva.res, show_colnames = T,
+                   scale = "row",angle_col = "45",
+                   color = colorRampPalette(c("navy", "white", "firebrick3") )(50))
+group_list <- data.frame(sample = colnames(gsva.df)[-1], group = c(rep("case",7), rep("con", 7)))
+group_list                          
+design <- model.matrix(~ 0 + factor(group_list$group))
+colnames(design) <- levels(factor(group_list$group))
+rownames(design) <- colnames(gsva.res)
+design
+contrast.matrix <- makeContrasts(con-case, levels = design)
+fit <- lmFit(gsva.res, design)
+fit2 <- contrasts.fit(fit, contrast.matrix)
+fit2 <- eBayes(fit2)
+x <- topTable(fit2, coef = 1, n = Inf, adjust.method = "BH", sort.by = "P")
+head(x)
+write.csv(x, "gsva_limma.csv", quote = F)
+pathway <- str_replace(row.names(x), "HALLMARK_", "")
+df <- data.frame(ID = pathway, score = x$t)
+head(df)
+write.csv(df, "enrich_bar.csv", quote = F, row.names = F)
+cutoff <- 0
+df$group <- cut(df$score, breaks = c(-Inf, cutoff, Inf),labs = c(1,2))
+head(df)
+sortdf <- df[order(df$score),]
+sortdf$ID <- factor(sortdf$ID, levels = sortdf$ID)
+head(sortdf)
+ggplot(sortdf, aes(ID, score, fill = group))+ geom_bar(stat = 'identity') +
+  coord_flip() +
+  scale_fill_manual(values = c('palegreen3', 'dodgerblue4'), guide = FALSE) +
+  geom_hline(yintercept = c(-1,1),
+             color="white",
+             linetype = 2, 
+             size = 0.3) + 
+  geom_text(data = subset(df, score < 0),
+            aes(x=ID, y=0.1, label=ID, color=group),
+            size = 3, 
+            hjust = "outward" )+ 
+  geom_text(data = subset(df, score > 0),
+            aes(x=ID, y= -0.1, label= paste0(" ", ID), color = group),
+            size = 3, hjust = "inward") +
+  scale_colour_manual(values = c("black", "black"), guide = FALSE) +
+  
+  xlab("" ) +ylab("GSVA t")+
+  theme_bw() + 
+  theme(panel.grid =element_blank()) + 
+  theme(panel.border = element_rect(size = 0.6)) + 
+  theme(axis.line.y = element_blank(), axis.ticks.y = element_blank(), axis.text.y = element_blank()) 
+ggsave("gsva.pdf", width = 6, height = 8)
